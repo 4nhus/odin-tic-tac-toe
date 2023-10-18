@@ -70,6 +70,7 @@ let gameController = {
     addMark: function(row, column) {
         if (this.currentPlayerSymbol) {
             gameBoard.addMark(this.currentPlayerSymbol, row, column);
+            this.currentPlayerSymbol = this.currentPlayerSymbol === 'X' ? 'O' : 'X';
         }
     },
 
