@@ -30,8 +30,11 @@ let gameBoard = {
 
     addMark: function(playerSymbol, row, column) {
         const index = (row * 3) + column;
-        this.board[index] = playerSymbol;
-        displayController.render(this.board)
+
+        if (this.board[index] === '') {
+            this.board[index] = playerSymbol;
+            displayController.render(this.board)
+        }
     },
 
     init: function() {
