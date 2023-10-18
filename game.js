@@ -10,7 +10,7 @@ let gameBoard = {
 
     addMark: function(playerSymbol, row, column) {
         const index = (row * 3) + column;
-        board[index] = playerSymbol;
+        this.board[index] = playerSymbol;
     },
 
     clearBoard: function() {
