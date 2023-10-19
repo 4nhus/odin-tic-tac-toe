@@ -1,10 +1,11 @@
 let displayController = {
-    render: function(board) {
-        const grid = document.getElementById('grid');
-        grid.remove();
+    body: document.querySelector('body'),
+    grid: document.getElementById('grid'),
 
-        const newGrid = document.createElement('div');
-        newGrid.id = 'grid';
+    render: function (board) {
+        this.grid.remove();
+        this.grid = document.createElement('div');
+        this.grid.id = 'grid';
 
         for (let row = 0; row < 3; row++) {
             for (let column = 0; column < 3; column++) {
@@ -12,15 +13,16 @@ let displayController = {
                 const index = (row * 3) + column;
                 cellButton.textContent = board[index];
                 cellButton.addEventListener('click', () => {
-                    gameController.addMark(row, column);
+                    if (cellButton.textContent === '') {
+                        gameController.addMark(row, column);
+                    }
                 });
 
-                newGrid.appendChild(cellButton);
+                this.grid.appendChild(cellButton);
             }
         }
 
-        const body = document.querySelector('body');
-        body.appendChild(newGrid);
+        this.body.appendChild(this.grid);
     }
 }
 
@@ -28,16 +30,62 @@ let gameBoard = {
     board: [],
     displayController: displayController,
 
-    addMark: function(playerSymbol, row, column) {
-        const index = (row * 3) + column;
+    checkBoardFull: function () {
+        for (const cell of this.board) {
+            if (cell === '') {
+                return false;
+            }
+        }
 
-        if (this.board[index] === '') {
-            this.board[index] = playerSymbol;
-            displayController.render(this.board)
+        return true;
+    },
+
+    checkWinForPlayer: function (playerSymbol) {
+        // Check rows
+        rowLoop:
+            for (let row = 0; row < 3; row++) {
+                for (let column = 0; column < 3; column++) {
+                    if (this.board[(row * 3) + column] !== playerSymbol) {
+                        continue rowLoop;
+                    }
+                }
+
+                return true;
+            }
+
+        // Check columns
+        columnLoop:
+            for (let column = 0; column < 3; column++) {
+                for (let row = 0; row < 3; row++) {
+                    if (this.board[(row * 3) + column] !== playerSymbol) {
+                        continue columnLoop;
+                    }
+                }
+
+                return true;
+            }
+
+        // Check diagonals
+        if (this.board[0] === playerSymbol && this.board[4] === playerSymbol && this.board[8] === playerSymbol) {
+            return true;
+        } else if (this.board[2] === playerSymbol && this.board[4] === playerSymbol && this.board[6] === playerSymbol) {
+            return true
+        }
+
+        return false;
+    },
+
+    addMark: function (playerSymbol, row, column) {
+        this.board[(row * 3) + column] = playerSymbol;
+        displayController.render(this.board);
+        if (this.checkWinForPlayer(playerSymbol)) {
+            alert('YOU WIN!');
+        } else if (this.checkBoardFull()) {
+            alert('TIE...');
         }
     },
 
-    init: function() {
+    init: function () {
         this.board = [];
 
         for (let i = 0; i < 9; i++) {
@@ -58,26 +106,26 @@ let gameController = {
     oPlayer: null,
     currentPlayerSymbol: 'X',
 
-    setXPlayer: function(player) {
+    setXPlayer: function (player) {
         this.xPlayer = player;
     },
 
-    setOPlayer: function(player) {
+    setOPlayer: function (player) {
         this.oPlayer = player;
     },
 
-    setCurrentPlayerSymbol: function(playerSymbol) {
+    setCurrentPlayerSymbol: function (playerSymbol) {
         this.currentPlayerSymbol = playerSymbol;
     },
 
-    addMark: function(row, column) {
+    addMark: function (row, column) {
         if (this.currentPlayerSymbol) {
             gameBoard.addMark(this.currentPlayerSymbol, row, column);
             this.currentPlayerSymbol = this.currentPlayerSymbol === 'X' ? 'O' : 'X';
         }
     },
 
-    init: function() {
+    init: function () {
         gameController.setXPlayer(playerFactory('X'));
         gameController.setOPlayer(playerFactory('O'));
         gameBoard.init();

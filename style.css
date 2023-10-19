@@ -2,13 +2,18 @@
     margin: 0;
     padding: 0;
     font-family: -apple-systrem, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+    font-size: xxx-large;
 }
 
-
+body {
+    display: grid;
+    justify-items: center;
+}
 
 #grid {
+    margin: 100px;
     aspect-ratio: 1;
     display: grid;
-    grid-template: repeat(3, min(150px, calc(100% / 3))) / repeat(3, min(150px, calc(100% / 3)));
+    grid-template: repeat(3, max(150px, calc(100% / 3))) / repeat(3, max(150px, calc(100% / 3)));
 }
 
