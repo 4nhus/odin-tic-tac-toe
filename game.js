@@ -1,6 +1,8 @@
 let displayController = {
     body: document.querySelector('body'),
     grid: document.getElementById('grid'),
+    startForm: document.getElementById('start'),
+    startButton: document.getElementById('start-new-game'),
 
     render: function (board) {
         this.grid.remove();
@@ -14,7 +16,8 @@ let displayController = {
                 cellButton.textContent = board[index];
                 cellButton.addEventListener('click', () => {
                     if (cellButton.textContent === '') {
-                        gameController.addMark(row, column);
+                        gameController.playRound(row, column);
+                        console.log("here");
                     }
                 });
 
@@ -23,6 +26,30 @@ let displayController = {
         }
 
         this.body.appendChild(this.grid);
+    },
+
+    init: function (board) {
+        this.render(board);
+
+        document.querySelector('dialog').showModal();
+
+        this.startButton.addEventListener('click', () => {
+            const bookTitle = document.getElementById('title').value;
+            const bookAuthor = document.getElementById('author').value;
+            const bookNumPages = document.getElementById('num-pages').value;
+            const bookHasBeenRead = document.getElementById('has-been-read').value === 'true';
+
+            if (bookTitle && bookAuthor && bookNumPages) {
+                const form = document.querySelector('form');
+                form.reset();
+
+                const book = new Book(bookTitle, bookAuthor, bookNumPages, bookHasBeenRead);
+                addBookToLibrary(book);
+                displayBook(createBookDiv(book));
+                dialog.close();
+            }
+        });
+
     }
 }
 
@@ -78,11 +105,6 @@ let gameBoard = {
     addMark: function (playerSymbol, row, column) {
         this.board[(row * 3) + column] = playerSymbol;
         displayController.render(this.board);
-        if (this.checkWinForPlayer(playerSymbol)) {
-            alert('YOU WIN!');
-        } else if (this.checkBoardFull()) {
-            alert('TIE...');
-        }
     },
 
     init: function () {
@@ -92,12 +114,12 @@ let gameBoard = {
             this.board.push('');
         }
 
-        displayController.render(this.board);
+        displayController.init(this.board);
     }
 }
 
-function playerFactory(playerSymbol) {
-    return {playerSymbol};
+function playerFactory(playerSymbol, name, isComputer) {
+    return {playerSymbol, name, isComputer};
 }
 
 let gameController = {
@@ -118,10 +140,27 @@ let gameController = {
         this.currentPlayerSymbol = playerSymbol;
     },
 
-    addMark: function (row, column) {
+    checkGameEnd: function () {
+        if (gameBoard.checkWinForPlayer(this.currentPlayerSymbol)) {
+            alert('YOU WIN!');
+            return true;
+        } else if (gameBoard.checkBoardFull()) {
+            alert('TIE...');
+            return true;
+        }
+
+        return false;
+    },
+
+    playRound: function (row, column) {
         if (this.currentPlayerSymbol) {
             gameBoard.addMark(this.currentPlayerSymbol, row, column);
-            this.currentPlayerSymbol = this.currentPlayerSymbol === 'X' ? 'O' : 'X';
+
+            if (this.checkGameEnd()) {
+                this.init();
+            } else {
+                this.currentPlayerSymbol = this.currentPlayerSymbol === 'X' ? 'O' : 'X';
+            }
         }
     },
 
