@@ -1,7 +1,7 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: -apple-systrem, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+    font-family: -apple-system, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
 }
 
 body {
@@ -9,13 +9,31 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#info {
+    position: relative;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    font-size: xx-large;
+}
+
+#players {
+    display: flex;
+    gap: 30px;
 }
 
 #grid {
-    margin: 100px;
-    aspect-ratio: 1;
+    margin: 50px;
     display: grid;
+    aspect-ratio: 1;
     grid-template: repeat(3, max(150px, calc(100% / 3))) / repeat(3, max(150px, calc(100% / 3)));
+    align-self: stretch;
 }
 
 #grid > * {
@@ -24,30 +42,22 @@ body {
 
 dialog {
     margin: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.players > * {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
 form {
     display: flex;
-    flex-direction: column;
-    padding: 50px 50px 20px 50px;
+    padding: 50px 50px 40px 50px;
     gap: 20px;
 }
 
-form > div {
-    display: flex;
-    gap: 10px
+dialog > button {
+    width: 100%;
 }
 
-form > div > * {
-    flex: auto;
+.player-forms {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 ::backdrop {

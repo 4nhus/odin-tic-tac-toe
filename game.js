@@ -1,8 +1,13 @@
 let displayController = {
     body: document.querySelector('body'),
     grid: document.getElementById('grid'),
+    startDialog: document.querySelector('dialog'),
     startForm: document.getElementById('start'),
     startButton: document.getElementById('start-new-game'),
+    currentPlayer: document.getElementById('current-player'),
+    player1: document.getElementById('player-1-info'),
+    player2: document.getElementById('player-2-info'),
+    gameSetup: false,
 
     render: function (board) {
         this.grid.remove();
@@ -15,9 +20,11 @@ let displayController = {
                 const index = (row * 3) + column;
                 cellButton.textContent = board[index];
                 cellButton.addEventListener('click', () => {
-                    if (cellButton.textContent === '') {
+                    if (!this.gameSetup) {
+                        this.startDialog.showModal();
+                    } else if (cellButton.textContent === '') {
                         gameController.playRound(row, column);
-                        console.log("here");
+                        this.currentPlayer.textContent = `It is ${gameController.currentPlayer.name}'s turn.`;
                     }
                 });
 
@@ -29,27 +36,40 @@ let displayController = {
     },
 
     init: function (board) {
+        this.player1.textContent = ``;
+        this.player2.textContent = ``;
+        this.currentPlayer.textContent = ``;
+        this.gameSetup = false;
         this.render(board);
 
-        document.querySelector('dialog').showModal();
+        this.startDialog.showModal();
 
         this.startButton.addEventListener('click', () => {
-            const bookTitle = document.getElementById('title').value;
-            const bookAuthor = document.getElementById('author').value;
-            const bookNumPages = document.getElementById('num-pages').value;
-            const bookHasBeenRead = document.getElementById('has-been-read').value === 'true';
+            const player1name = document.getElementById('player-1').value;
+            const player1isComputer = document.getElementById('player-1-is-computer').value === 'true';
+            const player1symbol = document.getElementById('player-1-symbol').value;
+            const player2name = document.getElementById('player-2').value;
+            const player2isComputer = document.getElementById('player-2-is-computer').value === 'true';
+            const player2symbol = player1symbol === 'X' ? 'O' : 'X';
+            const player1isFirst = document.getElementById('player-1-first').value === 'true';
 
-            if (bookTitle && bookAuthor && bookNumPages) {
-                const form = document.querySelector('form');
-                form.reset();
+            if (player1name && player2name) {
+                this.startForm.reset();
 
-                const book = new Book(bookTitle, bookAuthor, bookNumPages, bookHasBeenRead);
-                addBookToLibrary(book);
-                displayBook(createBookDiv(book));
-                dialog.close();
+                const player1 = playerFactory(player1symbol, player1name, player1isComputer);
+                const player2 = playerFactory(player2symbol, player2name, player2isComputer);
+                gameController.setPlayer1(player1);
+                gameController.setPlayer2(player2);
+                gameController.setCurrentPlayer(player1isFirst ? player1 : player2);
+
+                this.player1.textContent = `${player1name}: ${player1symbol}`;
+                this.player2.textContent = `${player2name}: ${player2symbol}`;
+                this.currentPlayer.textContent = `It is ${gameController.currentPlayer.name}'s turn.`;
+
+                this.startDialog.close();
+                this.gameSetup = true;
             }
         });
-
     }
 }
 
@@ -124,28 +144,32 @@ function playerFactory(playerSymbol, name, isComputer) {
 
 let gameController = {
     gameBoard: gameBoard,
-    xPlayer: null,
-    oPlayer: null,
-    currentPlayerSymbol: 'X',
+    player1: null,
+    player2: null,
+    currentPlayer: null,
 
-    setXPlayer: function (player) {
-        this.xPlayer = player;
+    setPlayer1: function (player) {
+        this.player1 = player;
     },
 
-    setOPlayer: function (player) {
-        this.oPlayer = player;
+    setPlayer2: function (player) {
+        this.player2 = player;
     },
 
-    setCurrentPlayerSymbol: function (playerSymbol) {
-        this.currentPlayerSymbol = playerSymbol;
+    setCurrentPlayer: function (player) {
+        this.currentPlayer = player;
+    },
+
+    swapCurrentPlayer: function () {
+        this.currentPlayer = this.currentPlayer === this.player1 ? this.player2 : this.player1;
     },
 
     checkGameEnd: function () {
-        if (gameBoard.checkWinForPlayer(this.currentPlayerSymbol)) {
-            alert('YOU WIN!');
+        if (gameBoard.checkWinForPlayer(this.currentPlayer.playerSymbol)) {
+            alert(`${this.currentPlayer.name} wins!`);
             return true;
         } else if (gameBoard.checkBoardFull()) {
-            alert('TIE...');
+            alert('Tie...');
             return true;
         }
 
@@ -153,20 +177,21 @@ let gameController = {
     },
 
     playRound: function (row, column) {
-        if (this.currentPlayerSymbol) {
-            gameBoard.addMark(this.currentPlayerSymbol, row, column);
+        if (this.currentPlayer) {
+            gameBoard.addMark(this.currentPlayer.playerSymbol, row, column);
 
             if (this.checkGameEnd()) {
                 this.init();
             } else {
-                this.currentPlayerSymbol = this.currentPlayerSymbol === 'X' ? 'O' : 'X';
+                this.swapCurrentPlayer();
             }
         }
     },
 
     init: function () {
-        gameController.setXPlayer(playerFactory('X'));
-        gameController.setOPlayer(playerFactory('O'));
+        this.player1 = null;
+        this.player2 = null;
+        this.currentPlayer = null;
         gameBoard.init();
     }
 }

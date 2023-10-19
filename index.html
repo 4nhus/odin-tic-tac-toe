@@ -6,48 +6,52 @@
     <link rel="stylesheet" href="./style.css">
     <script src="game.js" defer></script>
 </head>
-<body>
 <dialog>
-    <form action="" id="start">
-        <div class="players">
-            <div>
-                <div><label for="player-1">Player 1 Name:</label>
-                    <input type="text" id="player-1" name="player-1" required></div>
-                <div><label for="player-1-is-computer">Player 1 is computer:</label>
-                    <select name=player-1-is-computer" id="player-1-is-computer">
-                        <option value="true">yes</option>
-                        <option value="false">no</option>
-                    </select>
-                </div>
-                <div><label for="player-1-symbol">Player 1 Symbol:</label>
-                    <select name="player-1-symbol" id="player-1-symbol">
-                        <option value="x">x</option>
-                        <option value="o">o</option>
-                    </select>
-                </div>
+    <form action="" method="dialog" id="start">
+        <div class="player-forms">
+            <div><label for="player-1">Player 1 Name *:</label>
+                <input type="text" id="player-1" name="player-1" required></div>
+            <div><label for="player-1-is-computer">Player 1 is computer:</label>
+                <select name=player-1-is-computer" id="player-1-is-computer">
+                    <option value="true">yes</option>
+                    <option value="false">no</option>
+                </select>
             </div>
-            <div>
-                <div><label for="player-2">Player 2 Name:</label>
-                    <input type="text" id="player-2" name="player-2" required></div>
-                <div><label for="player-2-is-computer">Player 2 is computer:</label>
-                    <select name=player-2-is-computer" id="player-2-is-computer">
-                        <option value="true">yes</option>
-                        <option value="false">no</option>
-                    </select>
-                </div>
-                <div><label for="player-1-first">Player 1 goes first:</label>
-                    <select name="player-1-first" id="player-1-first">
-                        <option value="true">yes</option>
-                        <option value="false">no</option>
-                    </select>
-                </div>
+            <div><label for="player-1-symbol">Player 1 Symbol:</label>
+                <select name="player-1-symbol" id="player-1-symbol">
+                    <option value="X">X</option>
+                    <option value="O">O</option>
+                </select>
+            </div>
+        </div>
+        <div class="player-forms">
+            <div><label for="player-2">Player 2 Name *:</label>
+                <input type="text" id="player-2" name="player-2" required></div>
+            <div><label for="player-2-is-computer">Player 2 is computer:</label>
+                <select name=player-2-is-computer" id="player-2-is-computer">
+                    <option value="true">yes</option>
+                    <option value="false">no</option>
+                </select>
+            </div>
+            <div><label for="player-1-first">Player 1 goes first:</label>
+                <select name="player-1-first" id="player-1-first">
+                    <option value="true">yes</option>
+                    <option value="false">no</option>
+                </select>
             </div>
         </div>
     </form>
     <button id="start-new-game">START NEW GAME</button>
 </dialog>
-
+<body>
 <div id="grid">
+</div>
+<div id="info">
+    <div id="players">
+        <div id="player-1-info"></div>
+        <div id="player-2-info"></div>
+    </div>
+    <div id="current-player"></div>
 </div>
 </body>
 </html>
