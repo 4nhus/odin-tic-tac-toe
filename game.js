@@ -24,7 +24,9 @@ let displayController = {
                         this.startDialog.showModal();
                     } else if (cellButton.textContent === '') {
                         gameController.playRound(row, column);
-                        this.currentPlayer.textContent = `It is ${gameController.currentPlayer.name}'s turn.`;
+                        if (gameController.currentPlayer) {
+                            this.currentPlayer.textContent = `It is ${gameController.currentPlayer.name}'s turn.`;
+                        }
                     }
                 });
 
@@ -68,6 +70,10 @@ let displayController = {
 
                 this.startDialog.close();
                 this.gameSetup = true;
+
+                if (gameController.currentPlayer.isComputer) {
+                    gameController.computerPlay();
+                }
             }
         });
     }
@@ -123,8 +129,13 @@ let gameBoard = {
     },
 
     addMark: function (playerSymbol, row, column) {
-        this.board[(row * 3) + column] = playerSymbol;
-        displayController.render(this.board);
+        if (this.board[(row * 3) + column] === '') {
+            this.board[(row * 3) + column] = playerSymbol;
+            displayController.render(this.board);
+            return true;
+        }
+
+        return false;
     },
 
     init: function () {
@@ -139,7 +150,11 @@ let gameBoard = {
 }
 
 function playerFactory(playerSymbol, name, isComputer) {
-    return {playerSymbol, name, isComputer};
+    const randomMove = function () {
+        return Math.floor(Math.random() * 3);
+    }
+
+    return {playerSymbol, name, isComputer, randomMove};
 }
 
 let gameController = {
@@ -176,14 +191,30 @@ let gameController = {
         return false;
     },
 
-    playRound: function (row, column) {
-        if (this.currentPlayer) {
-            gameBoard.addMark(this.currentPlayer.playerSymbol, row, column);
+    computerPlay: function () {
+        while (!gameBoard.addMark(this.currentPlayer.playerSymbol, this.currentPlayer.randomMove(), this.currentPlayer.randomMove())) {
+        }
 
-            if (this.checkGameEnd()) {
-                this.init();
-            } else {
-                this.swapCurrentPlayer();
+        if (this.checkGameEnd()) {
+            this.init();
+        } else {
+            this.swapCurrentPlayer();
+
+            if (this.currentPlayer.isComputer) {
+                this.computerPlay();
+            }
+        }
+    },
+
+    playRound: function (row, column) {
+        gameBoard.addMark(this.currentPlayer.playerSymbol, row, column);
+
+        if (this.checkGameEnd()) {
+            this.init();
+        } else {
+            this.swapCurrentPlayer();
+            if (this.currentPlayer.isComputer) {
+                this.computerPlay();
             }
         }
     },
